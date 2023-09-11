@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Michael Clarke
+ * Copyright (C) 2020-2023 Michael Clarke
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -154,11 +154,8 @@ class CommunityBranchSupportDelegateTest {
         when(componentDto.copy()).thenReturn(copyComponentDto);
         when(copyComponentDto.setBranchUuid(any())).thenReturn(copyComponentDto);
         when(copyComponentDto.setKey(any())).thenReturn(copyComponentDto);
-        when(copyComponentDto.setRootUuid(any())).thenReturn(copyComponentDto);
         when(copyComponentDto.setUuidPath(any())).thenReturn(copyComponentDto);
-        when(copyComponentDto.setModuleUuidPath(any())).thenReturn(copyComponentDto);
         when(copyComponentDto.setUuid(any())).thenReturn(copyComponentDto);
-        when(copyComponentDto.setMainBranchProjectUuid(any())).thenReturn(copyComponentDto);
         when(copyComponentDto.setCreatedAt(any())).thenReturn(copyComponentDto);
 
         BranchDto branchDto = mock(BranchDto.class);
@@ -185,12 +182,9 @@ class CommunityBranchSupportDelegateTest {
 
         ComponentDto result = underTest.createBranchComponent(dbSession, componentKey, componentDto, branchDto);
 
-        verify(componentDao).insert(dbSession, copyComponentDto);
+        verify(componentDao).insert(dbSession, copyComponentDto, false);
         verify(copyComponentDto).setUuid("uuid0");
-        verify(copyComponentDto).setRootUuid("uuid0");
         verify(copyComponentDto).setUuidPath(".");
-        verify(copyComponentDto).setModuleUuidPath(".uuid0.");
-        verify(copyComponentDto).setMainBranchProjectUuid("componentUuid");
         verify(copyComponentDto).setCreatedAt(new Date(12345678901234L));
 
         assertThat(result).isSameAs(copyComponentDto);
@@ -203,7 +197,8 @@ class CommunityBranchSupportDelegateTest {
             .setExcludeFromPurge(excludedFromPurge)
             .setProjectUuid("componentUuid")
             .setKey(branchType == BranchType.BRANCH ? branchName : pullRequestKey)
-            .setUuid("uuid0"));
+            .setUuid("uuid0")
+            .setIsMain(false));
     }
 
 }
